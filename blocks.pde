@@ -22,12 +22,10 @@ int lifetime = 1000;
     return x; 
   }
   int getY(){
-    return Y; 
+    return y; 
   }
-  void setX(int newx){
+  void setXY(int newx, int newy){
     x=newx;
-  }
-  void setY(int newy){
-    x=newy;
+    y=newy;
   }
 }
