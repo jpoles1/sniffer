@@ -1,11 +1,12 @@
 import org.rsg.carnivore.net.*;
 import org.rsg.carnivore.*;
+import java.net.*;
 CarnivoreP5 c;
 ArrayList<Box> ips = new ArrayList<Box>();
 ArrayList<Line> conn = new ArrayList<Line>();
 int x, y, sx, sy, rx, ry;
 int bsize = 45;
-
+String host;
 void setup(){
   smooth();
   size(1200, 900);
@@ -22,30 +23,6 @@ void draw(){
   drawboxes();
   drawlines();
 }
-void drawlines(){
-  for(int i = conn.size()-1; i >= 0; i--){
-    if(conn.get(i).getLife()>0){
-      for(int j = ips.size()-1; j >= 0; j--){
-          if(conn.get(i).getSender().equals(ips.get(j).getIP())){
-            sx = ips.get(j).getX();
-            sy = ips.get(j).getY();
-            println(sx+","+sy);
-          }
-          if(conn.get(i).getReceiver().equals(ips.get(j).getIP())){
-            rx = ips.get(j).getX();
-            ry = ips.get(j).getY();
-            println(rx+","+ry);
-          }
-      }
-      strokeWeight(2);
-      stroke(conn.get(i).getWeight(),0,0);
-      line(sx, sy, rx, ry);
-    }
-    else{
-      conn.remove(i);
-    }
-  }
-}
 // Called each time a new packet arrives
 void packetEvent(CarnivorePacket p){
   Boolean sender = true;
@@ -61,10 +38,22 @@ void packetEvent(CarnivorePacket p){
     }
   }
   if(sender){
-    ips.add(new Box(p.senderAddress.toString()));
+    try{
+      host = InetAddress.getByName(p.senderAddress.toString()).getHostName();
+    }
+    catch (IOException e) {
+      host = "";
+    }
+    ips.add(new Box(p.senderAddress.toString(), host));
   }
   if(receiver){
-    ips.add(new Box(p.receiverAddress.toString()));
+    try{
+      host = InetAddress.getByName(p.receiverAddress.toString()).getHostName();
+    }
+    catch (IOException e) {
+      host = "";
+    }
+    ips.add(new Box(p.receiverAddress.toString(), host));
   }
   Boolean newline = true;
   for(int i = conn.size()-1; i >= 0; i--){
@@ -86,11 +75,11 @@ void drawboxes(){
       strokeWeight(1);
       stroke(0);
       fill(255);
-      ips.get(i).setXY((x*2*bsize)+bsize/2,(y*2*bsize)+bsize/2);
-      rect(x*2*bsize, y*2*bsize, bsize, bsize);
+      ips.get(i).setXY((x*2*bsize)+bsize/2,(y*3*bsize)+bsize/2);
+      rect(x*2*bsize, y*3*bsize, bsize, bsize);
       fill(0);
       noStroke();
-      text(ips.get(i).getIP(),x*2*bsize,y*2*bsize+bsize+20);
+      text(ips.get(i).getIP()+"\n"+ips.get(i).getHost(),x*2*bsize,y*3*bsize+bsize, x+2*bsize, y+3*bsize);
       x++;
       if(x>=width/(2*bsize)){
         x=0;
@@ -99,6 +88,30 @@ void drawboxes(){
     }
     else{
       ips.remove(i);
+    }
+  }
+}
+void drawlines(){
+  for(int i = conn.size()-1; i >= 0; i--){
+    if(conn.get(i).getLife()>0){
+      for(int j = ips.size()-1; j >= 0; j--){
+          if(conn.get(i).getSender().equals(ips.get(j).getIP())){
+            sx = ips.get(j).getX();
+            sy = ips.get(j).getY();
+            println(sx+","+sy);
+          }
+          if(conn.get(i).getReceiver().equals(ips.get(j).getIP())){
+            rx = ips.get(j).getX();
+            ry = ips.get(j).getY();
+            println(rx+","+ry);
+          }
+      }
+      strokeWeight(2);
+      stroke(conn.get(i).getWeight()+20,0,0);
+      line(sx, sy, rx, ry);
+    }
+    else{
+      conn.remove(i);
     }
   }
 }

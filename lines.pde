@@ -1,8 +1,8 @@
 class Line{
  String rip, sip;
  int life, weight; 
- int mult = 10;
- int lifetime = 300;
+ int mult = 3;
+ int lifetime = 200;
  int c = 255;
  Line(String sender, String receiver){
   rip = receiver; 

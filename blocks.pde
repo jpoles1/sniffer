@@ -1,11 +1,13 @@
 class Box{
 int x,y,life;
 String ip;
+String host = "";
 int lifetime = 1000;
-  Box(String thisip){
+  Box(String thisip, String ho){
     x=0;
     y=0;
     ip = thisip;
+    host = ho;
     life = lifetime;
   }
   void revive(){
@@ -23,6 +25,9 @@ int lifetime = 1000;
   }
   int getY(){
     return y; 
+  }
+  String getHost(){
+    return host; 
   }
   void setXY(int newx, int newy){
     x=newx;
